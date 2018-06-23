@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	 <meta charset="utf-8">
+	<title>西湖晓蛮腰</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="contents">
+  </div>
+  <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+  <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+  <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+  <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript">
+   $(function(){
+	  requestIndex();
+   })
+   var requestIndex = function(){
+	 $.ajax({  
+        url:'http://acttp.weixin.zjol.com.cn/pro_personal/',  
+        data:{
+         'm':'api',
+         'subm':'xhxmy',
+         'action':'index'
+        },
+        type:'get',
+        dataType:'json',
+        success:function(result) {  
+            render_index(result);
+        }, 
+    });  
+}
+
+var render_index = function(result){
+	var str = '';
+	str += '<div class="main"><img src="'+result.info[0].picture+ '" class="header"><ul class="footer clearfix">';
+	for(var i=1;i<(result.info.length);i++){
+	  	str += '<li class="lists"><a href="' + result.info[i].url + '"><img src="' +result.info[i].picture+'"><div class="titles">' + result.info[i].name +'</div></a></li>'
+	}
+	str += '</ul></div>';
+	$('.contents').html(str);
+}
+  </script>
+
+<script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+</body>
+</html>

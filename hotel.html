@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>最美民宿</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/swiper.min.css">
+</head>
+<body>
+    <div class="contents">
+    </div>
+    <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+    <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+    <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+     <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+
+<script type="text/javascript" src="js/swiper.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+var len;//客栈的总数
+var pages; //分页的页数
+var appendCount = 0; //当前加载页
+var infos = {};
+var imgs = []; //所有图片的集合
+var left_height = 0;
+var right_height = 1;
+var flag = false;
+var ready = true;
+$(function(){
+  request_hotel();
+  $(window).scroll(function() {
+     if($(document).scrollTop() + $(window).height() >= $(document).height()){
+        if(appendCount < pages){
+           if(flag){
+            //加载图片完成
+             if(ready){
+             request_page(appendCount);
+             ready = false;
+           }
+         }
+        }
+     }
+  })
+})
+
+var request_hotel = function(){
+	 $.ajax({
+	      url: 'http://acttp.weixin.zjol.com.cn/pro_personal/?m=api&subm=xhxmy&action=legend&id=2',
+	      type: 'get',
+	      data: '',
+	      dataType: 'json',
+	      success: function(res) {
+	        render_hotel(res);
+          console.log(res)
+	      }
+	})        
+}
+
+
+var render_hotel = function(res){
+	var str = '';
+	str += '<div class="hotel">' + '<div class="hotel-title"><div class="third-title">' + res.info.heardtitle.name + '</div>';
+	str += '<p class="third-des">'+  res.info.heardtitle.title + '</p></div>';
+    str += '<div class="swiper-container swiper-containers">' +'<div class="swiper-wrapper">';
+    for(var i=0;i<res.info.legendbanner.length;i++){
+	    str += '<div class="swiper-slide" style="background: url('
+	    + "'"
+	    + res.info.legendbanner[i].picture+ "')"
+	    +';background-size:100% 100%">';
+      if(res.info.legendbanner[i].url!= '') {
+        str += '<a href="'+res.info.legendbanner[i].url +'"></a>'
+      }
+	    str += '<div class="third-banner-title">' + res.info.legendbanner[i].name +'</div><div class="third-banner-des">' + res.info.legendbanner[i].english_name + '</div></div>';
+    }
+   str += '</div> <div class="swiper-pagination"></div></div>';
+   //瀑布流拼接
+   str += '<div class="third-list">';
+   str += '<ul class="third-ul"></ul><ul class="third-ul-right"><ul>';
+   str += '</div>';
+   str +='<a href="index.html"><img class="returnsbtn" src="images/returns.png"></a></div>';
+   len = res.info.legend.length;
+   infos = res.info.legend;
+   pages = Math.ceil(len/8);
+   
+   for (var i=0;i<len;i++){
+      imgs.push(res.info.legend[i].picture);
+   }
+  
+  if(pages<=1){
+     flag = false;
+     var count = 0;
+     $.each(imgs,function(i,src){
+         var imgObj = new Image();
+         $(imgObj).on('load',function(){
+          if(count >=len -1){
+            console.log("加载完成");
+            render_waterfall_total(res.info);
+          }
+           count++;
+         })
+         imgObj.src = src;
+     })
+  }
+  else{
+     flag = true;
+     request_page(appendCount);
+  }
+
+    $('.contents').html(str);
+     swipers_contents();
+}
+
+var render_waterfall_total = function(res){
+   for(var i=0;i<res.legend.length;i++){
+      var new_li = '';
+      new_li += '<li class="third-list-item">';
+      if(res.legend[i].url !=''){
+        new_li += '<a href="' + res.legend[i].url+'">'
+      }
+        new_li += '<img src="' + res.legend[i].picture + '">';
+      new_li += '<p class="third-name">' +  res.legend[i].name + '</p><div class="third-pic-des">';
+      new_li += res.legend[i].title + '</div>';
+      if(res.legend[i].url !=''){
+        new_li += '</a>'
+      }
+       new_li +='</li>';
+      if(left_height < right_height){ 
+         $('.third-ul').append(new_li);
+         left_height = $('.third-ul').height();
+      }
+      else{
+         $('.third-ul-right').append(new_li);
+         right_height = $('.third-ul-right').height();        
+      }
+   }
+  
+}
+
+var swipers_contents = function(){
+   var swiper = new Swiper('.swiper-containers', {
+        pagination: '.swiper-pagination',
+        effect: 'coverflow',
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        autoplay:3000,
+        paginationClickable: true,
+        autoplayDisableOnInteraction: false,
+        coverflow: {
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows : true
+        }
+    });
+}
+
+var request_page = function(i){
+   var temp = [];
+   var temp_img = [];
+   var nowlen = i * 8;
+   var nums;
+   if(nowlen > len){
+      nowlen = len;
+   }
+   if(i ==(pages-1)){
+     nums = len%8;
+   }
+   else{
+     nums = 8;
+   }
+
+   for(var i = 0;i<nums;i++){
+     temp[i] = infos[ i + nowlen];
+     temp_img [i] = imgs[i+nowlen];
+   }
+   confirm_ready(temp_img,temp,nums);
+   appendCount ++;
+}
+
+var confirm_ready = function(temp_img,infos,number){
+   var count = 0;
+     $.each(temp_img,function(i,src){
+         var imgObj = new Image();
+         $(imgObj).on('load',function(){
+          if(count >= number -1){
+            ready = true;
+            console.log("加载完成");
+            render_waterfall(infos);
+          }
+           count++;
+         })
+         imgObj.src = src;
+     })
+}
+
+var render_waterfall = function(infos){
+    for(var i=0;i<infos.length;i++){
+      var new_li = '';
+      new_li += '<li class="third-list-item">';
+      if(infos[i].url !=''){
+        new_li += '<a href="' + infos[i].url+'">'
+      }
+      new_li += '<img src="' + infos[i].picture + '">';
+      new_li += '<p class="third-name">' +  infos[i].name + '</p><div class="third-pic-des">';
+      new_li += infos[i].title + '</div>';
+      if(infos[i].url !=''){
+        new_li += '</a>'
+      }
+       new_li +='</li>';
+      if(left_height < right_height){ 
+         $('.third-ul').append(new_li);
+         left_height = $('.third-ul').height();
+      }
+      else{
+         $('.third-ul-right').append(new_li);
+         right_height = $('.third-ul-right').height();        
+      }
+   }
+}
+
+</script>
+<script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+
+</body>
+</html>

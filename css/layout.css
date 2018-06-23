@@ -1,0 +1,218 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+p{
+    margin: 0;
+    padding: 0;
+}
+#qqMain{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-image: -webkit-linear-gradient(top, #eee, #2e2e2e);
+    text-align: center;
+    position: absolute;
+}
+.qqMain-title{
+    font-size: 24px;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 25px;
+    display: block;
+}
+.img{
+    margin:30px auto;
+    width:240px;
+    height:240px;
+    position: relative;
+    background: #749e9a;
+    border-radius: 100%;
+}
+.img-wrapper{
+    width: 170px;
+    height: 170px;
+    position: absolute;
+    left: 50%;
+    top: 33px;
+    margin-left: -87px;
+}
+.img img{
+    width:100%;
+    height:100%;
+    position: absolute;
+    border-radius:100% ;
+    border: 3px solid white;
+    left: 0;
+    top: 0;
+}
+.rainbow{
+    animation: 6s rainbow infinite linear;
+    -webkit-animation: 6s rainbow infinite linear;
+}    
+@keyframes rainbow {
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+@-webkit-keyframes rainbow {
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+.btnpic{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 85%;
+    left: 50%;
+    right: 50%;
+    margin-left: -25px;
+    background: url(../images/parse.png);
+    background-size: 100% 100%;
+}
+.prev{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 87%;
+    left: 20%;
+    background: url(../images/prev.png);
+    background-size: 100% 100%; 
+}
+.next{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 87%;
+    right: 20%;
+    background: url(../images/next.png);
+    background-size: 100% 100%;
+}
+.music-page{
+    min-height: 400px;
+}
+.end-page{
+    position: absolute;
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+.lyrics-contenter{
+    position: relative;
+    margin-top: 10px;
+    transition: all .3s ease-in-out;
+    -webkit-transition: all .3s ease-in-out;
+}
+.lyrics{
+    height: 30px;
+    font-size: 12px;
+}
+.btn{
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: -6px;
+}
+
+.now_time{
+	float:left;
+	padding-left: 5px;
+}
+.all_time{
+	float:right;
+	padding-right:5px;
+}
+.time{
+    position: absolute;
+    top: 72%;
+    font-size:13px;
+    color: #fff;
+    font-weight: 400;
+    width: 90%;
+    left: 5%;
+}  
+.time_progress{
+    position: absolute;
+    top: 77%;
+    left: 5%;
+    width: 90%;
+}
+.progress{
+	width:100%;
+	height:4px;
+	background:#000;
+	position:relative;
+	}
+.bar{
+    position:absolute;
+    top:0;
+    left:0;
+    height:4px;
+    background: white;
+    display:block;
+    width: 0;
+}
+.musicName{
+    width: 100%;
+    height: 50px;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 50px;
+    padding-bottom: 10px;
+}
+.musicName span{
+    font-size:18px;
+    font-weight: 400;
+    color: #fff;
+}
+#musicContent{
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    height: 150px;
+    overflow-y:scroll;
+    left: 50%;
+    right: 50%;
+    margin-left: -40%;
+}
+.whiteContent{
+    font-size: 30px;
+    font-weight: 400;
+    color: #fff;
+}
+.blueContent{
+    color: dodgerblue;
+    font-size: 30px;
+    font-weight: 400;
+}
+.centerCircle{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 42%;
+    margin-left: -20px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+}
+#musicContent span{
+    width: 100%;
+    height: 40px;
+    line-height:40px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    display: block;
+}
+#btn-return{
+  position: absolute;
+  top: 92%;
+  left: 10px;
+  margin-left: 0;
+  margin-top: 10px;
+  display: block;
+  z-index: 999;
+}

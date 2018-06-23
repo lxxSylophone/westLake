@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>语音讲解</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+     <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+    <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+    <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+     <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+
+    <div class="contents">
+    </div>
+   <div id="qqMain" style="display: none" >
+      	<!--音乐-->
+      <!-- 	<audio src="333.mp3" id="my_audio"></audio> -->
+        <audio id="my_audio" autoplay="autoplay" src="">
+        </audio>
+      	<div class="music-page">
+      	     <div class="front-page">
+	            <span class="qqMain-title">
+	             灵隐景区
+	            </span>
+				<!--cd播放机-->
+				<div class="img">
+				   <div class="img-wrapper">
+					  <img src="" class="rainbow">
+					</div>
+				</div>
+				<!--音频名字-->
+				<div class="musicName">
+					<span>匆匆那年</span>
+				</div>
+             </div>
+             <div class="end-page" style="display: none">
+                 <div class="lyrics-contenter">
+                     
+                 </div> 
+             </div>
+             
+	    </div>		
+	    <div class="time">
+			<!--当前时间-->
+		    <span class="now_time" id="now_time">00:00</span>
+		    <!--总的时间-->
+		    <span class="all_time" id="all_time">00:00</span>
+		</div>
+		
+		<img id="btn-return" class="returnsbtn music_return" src="images/returns.png"> 
+		
+		<!--时间轴-->
+		<div class="time_progress">
+			<div class="progress">
+		    	<p class="bar" id="bar"></p>
+		        <div class="btn" id="btn"></div>
+		    </div>
+		</div>
+		<div class="prev">
+		</div>
+		<!--暂停或播放-->
+		<div class="btnpic"  item="0">
+		</div>
+		<div class="next">
+		</div> 
+   </div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+var p_all= 0.9*(document.documentElement.clientWidth || document.body.clientWidth);
+var cur = 1;
+var state = true; 
+var pid;
+var spotId;
+var nextSong_id;
+var preSong_id;
+var my_audio = document.getElementById('my_audio');
+
+ $(function(){
+   	request_spots();
+    document.addEventListener("WeixinJSBridgeReady", function () {
+          my_audio.play();
+   }, false);
+   	action();
+ })
+
+ 
+
+var action = function(){
+  	 //景区列表进入景区语音讲解页面
+    $('.contents').on('click','.spot',function(){
+   	      spotId = $(this).attr('data-id');
+         request_spotslist(spotId);
+   })
+    
+    //语音讲解进入语音播放页面
+    $('.contents').on('click','.temple-item',function(){
+       var id = $(this).attr('data-id');
+        pid = $(this).attr('data-pid');
+    	 request_music(id,pid);
+    })
+
+    
+    $('.contents').on('click','.spotslist_return',function(){
+       request_spots();
+    })
+    $('#btn-return').click(function(){
+      request_spotslist(spotId);
+      my_audio.setAttribute('src','');
+      $('#qqMain').hide();
+      // $('#my_audio').remove();
+      $('.btnpic').css({
+                  "background": "url(images/parse.png)",
+                  "background-size": "100% 100%"
+       });
+       $('.btnpic').attr("item","0");
+        $(".img img").addClass("rainbow"); 
+        $('.front-page').show();
+                $('.end-page').hide();
+                $('.time').show();
+                $('.time_progress').show();
+                $('.next').show();
+                $('.btnpic').show();
+                $('.prev').show();
+                 $('.music_return').show();
+                flag = true;
+
+    })
+
+
+    $(".btnpic").click(function(){
+      if($(this).attr("item")=="1"){  
+         $(this).css({
+                    "background": "url(images/parse.png)",
+                    "background-size": "100% 100%"
+         });
+         $(this).attr("item","0");
+      }
+      else{
+        $(this).css({
+                    "background": "url(images/playmusic.png)",
+                    "background-size": "100% 100%"
+        });
+        $(this).attr("item","1");
+      }
+        playPause();
+    });
+
+ 
+     //下一首
+     $('.next').click(function(){
+        next_song();
+     })
+
+     //上一首
+     $('.prev').click(function(){
+         pre_song();
+     })
+
+    var  flag = true;//在正面播放页面
+    $('.music-page').click(function(){
+             if(flag){
+                $('.front-page').hide();
+                $('.end-page').show();
+                $('.time').hide();
+                $('.time_progress').hide();
+                $('.next').hide();
+                $('.btnpic').hide();
+                $('.prev').hide();
+                $('.music_return').show();
+                flag = false;
+             }
+             else{
+                $('.front-page').show();
+                $('.end-page').hide();
+                $('.time').show();
+                $('.time_progress').show();
+                $('.next').show();
+                $('.btnpic').show();
+                $('.prev').show();
+                 $('.music_return').show();
+                flag = true;
+             }
+    })
+
+
+}
+
+var request_spots = function(){
+	 $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/?m=api&subm=xhxmy&action=speprelist&id=5',
+          type: 'get',
+          data: {id:1},
+          dataType: 'json',
+          success: function(res) {
+            console.log(res);
+          	render_spots(res)
+          }
+    })   
+}
+
+var render_spots = function(res){
+	var str ='';
+	str += '<div class="tour">';
+    for(var i = 0;i<res.info.speprelist.length;i++){
+    	str += '<div class="listens"><div class="spot" data-id='+ res.info.speprelist[i].id+'><img src="'+ res.info.speprelist[i].picture +'">';
+    	str += '<div class="triangle"></div></div><p class="first-pass">' + res.info.speprelist[i].name + '</p>';
+    	str += '<p class="second-pass">' + res.info.speprelist[i].title + '</p></div>'
+    }
+    str += '<a href="index.html"><img class="returnsbtn" src="images/returns.png"></a></div>';
+    $('.contents').html(str);
+}
+
+
+var request_spotslist = function(id){
+   $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/'+'?m=api&subm=xhxmy&action=scespo',
+          type: 'get',
+          data: {
+            id:id
+          },
+          dataType: 'json',
+          success: function(res) {
+            console.log(res)
+          	render_spotslist(res.info)
+          }
+    })   
+}
+
+
+
+var render_spotslist = function(res){
+    var str = '';
+    str += '<div class="temple">';
+    for(var i=0;i<res.length;i++){
+	    str += '<div class="temple-item" data-id='+ res[i].id + ' data-pid=' + res[i].pid+'><img src="' + res[i].picture + '" class="temple-pic">';
+	    str += ' <div class="temple-wrapper"><p class="temple-title">' + res[i].name + '</p>';
+	    str += ' <p class="temple-time">' + res[i].playbacktime +'</p>';
+	    str += '<p class="temple-desc">' + res[i].title +'</p></div></div>';
+	}
+	str +=  '<img class="returnsbtn spotslist_return" src="images/returns.png"></div>';
+	$('.contents').html(str);
+}
+
+
+var request_music = function(id,pid){
+     $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/' +'?m=api&subm=xhxmy&action=scenicspot',
+          type: 'get',
+          data: {
+          	id:id,
+          	pid:pid
+          },
+          dataType: 'json',
+          success: function(res) {
+            console.log(res);
+          	render_play(res);
+            nextSong_id = res.info.next;
+            preSong_id = res.info.pre;
+          }
+    })     
+}
+
+
+var render_play = function(res){
+     $('.contents').html('');
+      
+      my_audio.setAttribute("autoplay", 'true');
+      my_audio.setAttribute("id", 'my_audio');
+      my_audio.setAttribute("preload", 'auto');
+
+      my_audio.addEventListener('canplay', function(){
+        document.getElementById("all_time").innerHTML = timeFormat(my_audio.duration);
+      }, false);
+      // document.getElementById('qqMain').appendChild(my_audio);
+
+    
+    
+
+     $('.qqMain-title').html(res.info.name); 
+     $('.img-wrapper img').attr('src',res.info.textimage);
+     $('.musicName span').html(res.info.title);
+     $('#qqMain').css({'background':'url('+ res.info.picture +')',"background-size": "100% 100%"});
+     $('#my_audio').attr('src',res.info.voiceaddress);
+    
+      var newStr = res.info.content;
+      $('.lyrics-contenter').html(newStr);
+
+      $('#qqMain').show();
+      my_audio.play();
+
+
+      play_song();
+
+      // var play = function(){  
+      //   alert(my_audio);
+      //   my_audio.load();
+      //   qqMain.removeEventListener("click",play, false);  
+      //   my_audio.play();
+      // };
+      // qqMain.addEventListener("click",play, false);
+
+      // $('#qqMain').click();
+
+      // window.onload  = function(){
+      //   $('#qqMain').trigger('click');
+      //   alert(1);
+      //   document.addEventListener("WeixinJSBridgeReady", function () {
+      //       // audio.play();
+      //       // $('#qqMain').click();
+      //       my_audio.play();
+      //   }, false);
+      //   $('#qqMain').trigger('click');
+      // }
+      
+      // document.trigger("touchstart");
+    //   document.addEventListener("WeixinJSBridgeReady",function(){
+    //    my_audio.play();
+    // },false);
+      
+}
+
+var play_song = function(){
+    var my_audio = document.getElementById("my_audio");
+    // my_audio.play();
+    var startX = startY = endX = endY = 0;  
+    my_audio.ontimeupdate = function(){
+    //获取当前播放时间
+    document.getElementById("now_time").innerHTML = timeFormat(my_audio.currentTime);
+    //播放到歌曲的末尾了
+    if(my_audio.duration == my_audio.currentTime)
+    {
+      $(".img img").removeClass("rainbow");
+      next_song();
+    }
+    //当前的长度
+      now_long=my_audio.currentTime/my_audio.duration*p_all;
+      $(".bar").css({width:now_long});
+      var btn_l=now_long-10+'px';
+      $(".btn").css({left:btn_l});
+      addListenTouch();
+  }
+  
+}
+
+
+//暂停或播放
+var playPause = function()
+{ 
+  if(my_audio.paused)
+    {
+      my_audio.play();
+      $(".img img").addClass("rainbow");
+    }
+    else
+    {
+      my_audio.pause();
+      $(".img img").removeClass("rainbow");
+    }   
+}
+  
+  var timeFormat = function(seconds){
+      var m = Math.floor(seconds/60)<10 ? "0"+Math.floor(seconds/60) : Math.floor(seconds/60);
+      var s = Math.floor(seconds-(m*60))<10 ? "0"+Math.floor(seconds-(m*60)) : Math.floor(seconds-(m*60));
+      return m+":"+s;
+    };  
+
+  //手动拉拽进度条的部分
+  var addListenTouch = function(){
+    var btn=document.getElementById("btn");
+    document.getElementById("btn").addEventListener("touchstart", touchStart, false);
+    document.getElementById("btn").addEventListener("touchmove", touchMove, false);
+    document.getElementById("btn").addEventListener("touchend", touchEnd, false);
+  }
+
+  var touchStart = function(e){
+    //判断移动时候播放器的状态
+     if(my_audio.paused){
+      state = true;
+     }
+     else{
+      state = false;
+     }
+    e.preventDefault();
+    var touch=e.touches[0];
+    startX=touch.pageX;
+    my_audio.pause();
+    document.getElementById("all_time").innerHTML = timeFormat(my_audio.duration);  
+    //歌词区域touch移动距离
+    var touchSong = e.targetTouches[0];
+        startSongX = touchSong.pageX;
+        startSongY = touchSong.pageY;
+    }
+
+  var touchMove = function(e){//滑动
+    e.preventDefault();
+    var touch=e.touches[0];
+    x=touch.pageX-startX//滑动的距离
+    var widthBar=now_long+x;
+    $(".bar").css({width:widthBar});
+    if(widthBar<p_all){
+      $("#btn").css({left:widthBar-10+'px'});
+      $("#bar").css({width:widthBar});  
+    }
+    var touchSong = e.targetTouches[0];
+        endSongX = touchSong.pageX;
+        endSongY = touchSong.pageY;
+       
+    var yu=widthBar/p_all*my_audio.duration;
+    document.getElementById("now_time").innerHTML = timeFormat(yu);
+  }
+
+  var touchEnd = function(e){//手指离开屏幕
+    e.preventDefault();//取消事件的默认动作
+    now_long=parseInt(btn.style.left);
+    var touch=e.touches[0];
+    var dragPaddingLeft=btn.style.left;
+    var change=dragPaddingLeft.replace("px","");
+    numDragpaddingLeft=parseInt(change);
+    var currentTimeNew=(numDragpaddingLeft/(p_all-20)*my_audio.duration);
+    my_audio.currentTime = currentTimeNew;
+    document.getElementById("now_time").innerHTML = timeFormat(currentTimeNew);
+    if(state){
+      my_audio.pause();
+    }
+    else{
+     my_audio.play();
+    }
+    document.getElementById("all_time").innerHTML = timeFormat(my_audio.duration);  
+  }
+
+  var next_song = function(){
+       requestNext_song(nextSong_id,pid);
+       
+        $('.btnpic').css({
+                    "background": "url(images/parse.png)",
+                    "background-size": "100% 100%"
+        });
+        $(".img img").addClass("rainbow");
+        $('.btnpic').attr("item","0");
+  }
+
+  var requestNext_song = function(id,pid){
+       $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/' +'?m=api&subm=xhxmy&action=scenicspot',
+          type: 'get',
+          data: {
+            id:id,
+            pid:pid
+          },
+          dataType: 'json',
+          success: function(res) {
+            render_play_next_pre(res)
+            nextSong_id = res.info.next;
+            preSong_id = res.info.pre;
+          }
+    })     
+  }
+
+  var render_play_next_pre = function(res){
+     $('.qqMain-title').html(res.info.name); 
+     $('.img-wrapper img').attr('src',res.info.textimage);
+     $('.musicName span').html(res.info.title);
+     $('#qqMain').css({'background':'url('+ res.info.picture +')',"background-size": "100% 100%"});
+     $('#my_audio').attr('src',res.info.voiceaddress);
+     var newStr = res.info.content;
+      $('.lyrics-contenter').html(newStr);
+  }
+
+  var pre_song = function(){
+     requestPre_song(preSong_id,pid)
+     $('.btnpic').css({
+                "background": "url(images/parse.png)",
+                "background-size": "100% 100%"
+     });
+    $('.btnpic').attr("item","0");
+    $(".img img").addClass("rainbow"); 
+  }
+
+  var requestPre_song = function(id,pid){
+       $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/' +'?m=api&subm=xhxmy&action=scenicspot',
+          type: 'get',
+          data: {
+            id:id,
+            pid:pid
+          },
+          dataType: 'json',
+          success: function(res) {
+            render_play_next_pre(res)
+            nextSong_id = res.info.next;
+            preSong_id = res.info.pre;
+          }
+    })     
+  }
+
+
+</script>
+<script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+</body>
+</html>

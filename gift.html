@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>口袋福利</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="contents">
+  </div>
+  <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+  <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+  <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+   <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(function(){
+       request_gift();
+    })
+
+    var request_gift = function(){
+		 $.ajax({
+	          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/?m=api&subm=xhxmy&action=welfare&id=7',
+	          type: 'get',
+	          data: {id:1},
+	          dataType: 'json',
+	          success: function(res) {
+	          	render_gift(res)
+	          }
+	    })     
+    }
+
+
+	var render_gift = function(res){
+		var str ='';
+		str += '<div class="gifts">';
+		for(var i=0;i<res.info.pradirlist.length;i++){
+	      str += '<div>';
+	      if(res.info.pradirlist[i].url != ''){
+	      	str += '<a href="'+ res.info.pradirlist[i].url +'">'
+	      }
+	      str +='<img class="gift-pic" src="' + res.info.pradirlist[i].picture + '">';
+	      str += '<div class="gift-right"><p class="gift-title">' + res.info.pradirlist[i].name +'</p>';
+	      str += '<p class="gift-des">' + res.info.pradirlist[i].title + '</p></div>';
+	      if(res.info.pradirlist[i].url != ''){
+	      	str += '</a>'
+	      }
+	      str += '</div>'
+		}
+		str +=  '<a href="index.html"><img class="returnsbtn" src="images/returns.png"></a></div>';  
+		 $('.contents').html(str);
+	     
+	}
+  </script>
+  <script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>阿蛮商城</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/swiper.min.css">
+</head>
+<body>
+   <div class="contents">
+   </div>
+    <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+    <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+    <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+     <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+<script type="text/javascript" src="js/swiper.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+   request_market();
+})
+var request_market = function(){
+	$.ajax({
+	          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/?m=api&subm=xhxmy&action=amanshop&id=3',
+	          type: 'get',
+	          data: {id:1},
+	          dataType: 'json',
+	          success: function(res) {
+                console.log(res)
+	            render_market(res)
+
+                // console.log(res.info.cfxta.length)
+            }
+	})     
+}
+var render_market = function(res){
+	var str = '';
+	str += '<div class="market">';
+	str += '<div class="swiper-container market-banner"><div class="swiper-wrapper">';
+	for(var i=0;i<res.info.amanbanner.length;i++){
+		str += '<div class="swiper-slide" style="background: url('
+	    + "'"
+	    + res.info.amanbanner[i].picture+ "')"
+	    +'">'
+	    if(res.info.amanbanner[i].url!= '') {
+	    	str += '<a href="'+res.info.amanbanner[i].url +'"></a>'
+	    }
+	    str += '</div>';
+	}
+	str += '</div><div class="swiper-pagination"></div></div>';
+    
+    //第二行
+    str += '<div><ul class="clearfix first-line-pic">';
+    for(var i=0;i<4;i++){
+    	str += '<li class="first-line-items">';
+    	if(res.info.yxta[i].url != ''){
+    		str += '<a href="' + res.info.yxta[i].url + '">'; 
+    	}
+    	str +='<img src="' + res.info.yxta[i].picture +'">';
+    	str += '<div class="products">' + res.info.yxta[i].name +'</div>'
+    	if(res.info.yxta[i].url != ''){
+    		str += '</a>'
+    	}
+    	str +='</li>';
+    }
+    str += '</ul></div>'
+   
+    //第三行
+    str += '<div><ul class="clearfix second-line-pic">';
+    for(var i=0;i<3;i++){
+    	str += '<li class="second-line-items">';
+    	if(res.info.zfzta[i].url != ''){
+    		str += '<a href="' + res.info.zfzta[i].url + '">'; 
+    	}
+    	str +='<img src="' + res.info.zfzta[i].picture +'">';
+    	str +='<div class="title-img">' + res.info.zfzta[i].name +'</div>';
+    	if(res.info.zfzta[i].url != ''){
+    		str += '</a>';
+    	}
+    	str +='</li>';
+    }
+    str +='</ul></div>';
+ 
+   // swiper 转动 width 50%;
+     str += '<div class="swiper-container seconds-container"><div class="swiper-wrapper">'
+     for(var i=0;i<res.info.cfxta.length;i++){
+	    str += '<div class="swiper-slide seconds-slide" style="background: url('
+	    + "'"
+	    + res.info.cfxta[i].picture+ "')"
+	    +'">';
+	   if(res.info.cfxta[i].url != ''){
+	   	 str += '<a href="' + res.info.cfxta[i].url + '"></a>'; 
+	   }
+	   str +=  '</div>'
+    }
+    str += '</div><div class="swiper-button-next"></div><div class="swiper-button-prev"></div></div>'
+    //即将上新
+    str += '<img src="images/future.png" class="future">';
+    for(var i=0;i<res.info.jjsx.length;i++){
+        if( res.info.jjsx[i].url != ''){
+    	str += '<a href="' + res.info.jjsx[i].url +'">' + '<img class="nowadays" src="' + res.info.jjsx[i].picture +'"></a>'
+       }
+       else{
+          str += '<img class="nowadays" src="' + res.info.jjsx[i].picture +'">'
+       }
+    }
+    str += '<a href="index.html"><img class="returnsbtn" src="images/returns.png"></a>';
+	 $('.contents').html(str);
+	 $('.swiper-slide').css({
+         "background-size": "100% 100%"
+     });
+     market_banner();
+     second_swipers();
+}
+
+
+var market_banner = function(){
+	var swiper = new Swiper('.market-banner', {
+        pagination: '.swiper-pagination',
+        effect: 'coverflow',
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        autoplay:3000,
+        paginationClickable: true,
+        autoplayDisableOnInteraction: false,
+        coverflow: {
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows : true
+        }
+    });
+}
+
+var second_swipers = function(){
+	  var swiper = new Swiper('.seconds-container', {
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+        slidesPerView: 2,//一行显示2个
+    });
+}
+
+</script>
+<script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+
+</body>
+</html>

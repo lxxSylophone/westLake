@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>每周动态</title>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/swiper.min.css">
+</head>
+<body>
+   <div class="contents">
+   </div>
+    <input type="hidden"  id="nxpt_share_title"   value="把西湖，“八卦”给你看"> 
+    <input type="hidden"  id="nxpt_share_desc"    value="跟着阿蛮，玩转世界遗产地"> 
+    <input type="hidden"  id="nxpt_share_image"   value="http://acttp.weixin.zjol.com.cn/assets/westLake/images/logos.jpg"> 
+     <input type="hidden"  id="nxpt_share_link"    value="http://acttp.weixin.zjol.com.cn/assets/westLake/index.html"> 
+<script type="text/javascript" src="js/swiper.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+   request_weekend();
+})
+
+var request_weekend = function(){
+	 $.ajax({
+          url: 'http://acttp.weixin.zjol.com.cn/pro_personal/?m=api&subm=xhxmy&action=weedyn&id=6',
+          type: 'get',
+          data: {id:1},
+          dataType: 'json',
+          success: function(res) {
+            console.log(res)
+          	render_weenkend(res)
+          }
+    })     
+}
+
+var render_weenkend = function(res){
+     var str = '';
+     str += '<div class="weekend"><img src="images/week.png" class="weekend-title">';
+     str += '<div class="swiper-container first-new-swiper"><div class="swiper-wrapper">';
+
+     for(var i=0;i<res.info.weedynbanner.length;i++){
+	    str += '<div class="swiper-slide" style="background: url('
+	    + "'"
+	    + res.info.weedynbanner[i].picture+ "')"
+	    +'">';
+	   if(res.info.weedynbanner[i].url != ''){
+	   	 str += '<a href="' + res.info.weedynbanner[i].url + '"></a>'; 
+	   }
+	   str += '</div>'
+    }
+
+    str += '</div><div class="swiper-pagination"></div></div>';
+    
+    str += '<div class="first-wrapper"><div class="first-wrapper"><img src="images/tem.png" class="pic-one">';
+    str += ' <div class="introducation"><div>' + res.info.weedyn[0].name + '</div><div>' + res.info.weedyn[0].title +'</div></div></div>';
+    //下面展示为偶数个
+         for(var i=1;i<(res.info.weedyn.length);i++)
+         {
+         	str += '<div class="week-pic">'
+         	if(res.info.weedyn[i].url !=''){
+         		str += '<a href="'+ res.info.weedyn[i].url +'">' 
+         	}
+         	if(i%2 != 0){
+	         	str += '<img src="' + res.info.weedyn[i].picture + '" class="pic-sun">';
+	         	str += '<div class="introducation-week"><img class="small-icon" src="' + res.info.weedyn[i].smallicons +'">';
+	         	str += '<div class="small-tips">' + res.info.weedyn[i].name +'</div>';
+	         	str += '<div class="small-des">' + res.info.weedyn[i].title +'</div></div>';
+            }
+            else{
+	         	str += '<div class="introducation-week"><img class="small-icon" src="' + res.info.weedyn[i].smallicons +'">';
+	         	str += '<div class="small-tips">' + res.info.weedyn[i].name +'</div>';
+	         	str += '<div class="small-des">' + res.info.weedyn[i].title +'</div></div>';
+	         	str += '<img src="' + res.info.weedyn[i].picture + '" class="pic-sun">';
+            }
+
+         	if(res.info.weedyn[i].url !=''){
+         		str += '</a>';
+         	}
+         	str +='</div>';
+         }
+         str += '</div><a href="index.html"><img class="returnsbtn" src="images/returns.png"></div></a>'
+	      
+
+    $('.contents').html(str);
+     $('.swiper-slide').css({
+         "background-size": "100% 100%"
+     });
+   
+   weekSwiper(); 
+}
+
+var weekSwiper = function(){
+	 var swiper = new Swiper('.first-new-swiper', {
+        pagination: '.swiper-pagination',
+        effect: 'coverflow',
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        autoplay:3000,
+        paginationClickable: true,
+        autoplayDisableOnInteraction: false,
+        coverflow: {
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows : true
+        }
+    });
+}
+</script>
+<script type="text/javascript" src="http://acttp.weixin.zjol.com.cn/dl_bmtp/assets/dl_wzxw/assets/js/jquery-3.1.1.min.js"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $.get("http://acttp.weixin.zjol.com.cn/dl_footer/", function(data) {
+        $('html').append(data)
+    })
+</script>
+
+</body>
+</html>
